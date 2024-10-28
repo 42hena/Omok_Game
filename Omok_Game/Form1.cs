@@ -154,6 +154,9 @@ namespace Omok_Game
                 case en_PacketType.LoginResponse:               // 2
                     proto.RecvLogin(ref newPacket);
                     break;
+                case en_PacketType.RoomListResponse:            // 102
+                    proto.RecvRoomList(ref newPacket);
+                    break;
                 case en_PacketType.CreateRoomResponse:          // 202
                     proto.RecvCreateRoom(ref newPacket);
                     break;
@@ -499,6 +502,40 @@ namespace Omok_Game
             else
             {
                 loginbutton.Enabled = false;
+            }
+        }
+
+        public void AddRoomlistView(string roomNo)
+        {
+            if (roomlistView.InvokeRequired)
+            {
+                roomlistView.Invoke(new MethodInvoker(delegate
+                {
+                    AddRoomlistView(roomNo);
+                }));
+            }
+            else
+            {
+                ListViewItem item = new ListViewItem(roomNo);
+                // 서브아이템을 추가하려면 아래와 같이 작성
+                // item.SubItems.Add("서브 아이템 텍스트");
+
+                roomlistView.Items.Add(item);
+            }
+        }
+
+        public void ClearRoomlistView()
+        {
+            if (roomlistView.InvokeRequired)
+            {
+                roomlistView.Invoke(new MethodInvoker(delegate
+                {
+                    ClearRoomlistView();
+                }));
+            }
+            else
+            {
+                roomlistView.Items.Clear();
             }
         }
 
@@ -1209,6 +1246,49 @@ namespace Omok_Game
 
             packet.Write((long)accountNo);
             packet.Write(roomNo);
+
+            packet.SetHeader();
+
+            int useSize = packet.GetUseSize();
+            clientTcp._sendBuffer.Enqueue(packet.ToArray(), headerLen + useSize);
+        }
+
+        private void roomlistView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void nextbutton_Click(object sender, EventArgs e)
+        {
+            string indexString = indexLabel.Text;
+            int idx = Convert.ToUInt16(indexString);
+            ++idx;
+            indexLabel.Text = idx.ToString();
+        }
+
+        private void prevbutton_Click(object sender, EventArgs e)
+        {
+            string indexString = indexLabel.Text;
+            int idx = Convert.ToUInt16(indexString);
+            --idx;
+            if (idx == 0)
+                idx = 1;
+            indexLabel.Text = idx.ToString();
+        }
+
+        private void requestbutton_Click(object sender, EventArgs e)
+        {
+            en_PacketType packetType = en_PacketType.RoomListRequest;
+            ulong accountNo = CClient.Instance.GetAccountNo();
+            string indexString = indexLabel.Text;
+            ushort index = Convert.ToUInt16(indexString);
+
+            CBuffer packet = new CBuffer();
+
+            packet.Write(packetType);
+
+            packet.Write((long)accountNo);
+            packet.Write(index);
 
             packet.SetHeader();
 

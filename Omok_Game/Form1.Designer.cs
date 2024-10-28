@@ -50,6 +50,8 @@
             accountlabel = new Label();
             nicknamelabel = new Label();
             groupBox4 = new GroupBox();
+            requestbutton = new Button();
+            indexLabel = new Label();
             nextbutton = new Button();
             prevbutton = new Button();
             roomlistView = new ListView();
@@ -262,6 +264,8 @@
             // 
             // groupBox4
             // 
+            groupBox4.Controls.Add(requestbutton);
+            groupBox4.Controls.Add(indexLabel);
             groupBox4.Controls.Add(nextbutton);
             groupBox4.Controls.Add(prevbutton);
             groupBox4.Controls.Add(roomlistView);
@@ -270,19 +274,39 @@
             groupBox4.Controls.Add(enterRoombutton);
             groupBox4.Location = new Point(2, 211);
             groupBox4.Name = "groupBox4";
-            groupBox4.Size = new Size(328, 141);
+            groupBox4.Size = new Size(396, 141);
             groupBox4.TabIndex = 19;
             groupBox4.TabStop = false;
             groupBox4.Text = "로비";
             // 
+            // requestbutton
+            // 
+            requestbutton.Location = new Point(267, 121);
+            requestbutton.Name = "requestbutton";
+            requestbutton.Size = new Size(67, 20);
+            requestbutton.TabIndex = 17;
+            requestbutton.Text = "Request";
+            requestbutton.UseVisualStyleBackColor = true;
+            requestbutton.Click += requestbutton_Click;
+            // 
+            // indexLabel
+            // 
+            indexLabel.AutoSize = true;
+            indexLabel.Location = new Point(289, 107);
+            indexLabel.Name = "indexLabel";
+            indexLabel.Size = new Size(14, 15);
+            indexLabel.TabIndex = 16;
+            indexLabel.Text = "1";
+            // 
             // nextbutton
             // 
-            nextbutton.Location = new Point(259, 114);
+            nextbutton.Location = new Point(349, 114);
             nextbutton.Name = "nextbutton";
             nextbutton.Size = new Size(41, 23);
             nextbutton.TabIndex = 7;
             nextbutton.Text = ">";
             nextbutton.UseVisualStyleBackColor = true;
+            nextbutton.Click += nextbutton_Click;
             // 
             // prevbutton
             // 
@@ -292,6 +316,7 @@
             prevbutton.TabIndex = 6;
             prevbutton.Text = "<";
             prevbutton.UseVisualStyleBackColor = true;
+            prevbutton.Click += prevbutton_Click;
             // 
             // roomlistView
             // 
@@ -301,7 +326,8 @@
             roomlistView.Size = new Size(208, 118);
             roomlistView.TabIndex = 5;
             roomlistView.UseCompatibleStateImageBehavior = false;
-            roomlistView.View = View.Details;
+            roomlistView.View = View.List;
+            roomlistView.SelectedIndexChanged += roomlistView_SelectedIndexChanged;
             // 
             // createRoombutton
             // 
@@ -521,6 +547,7 @@
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
             groupBox4.ResumeLayout(false);
+            groupBox4.PerformLayout();
             groupBox5.ResumeLayout(false);
             groupBox5.PerformLayout();
             groupBox6.ResumeLayout(false);
@@ -573,5 +600,7 @@
         private Button cancelbutton;
         private GroupBox groupBox6;
         private Button specbutton;
+        private Label indexLabel;
+        private Button requestbutton;
     }
 }

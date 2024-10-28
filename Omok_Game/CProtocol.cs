@@ -95,6 +95,26 @@ namespace Omok_Game
             }
         }
 
+        public void RecvRoomList(ref CBuffer recvPacket)  // 252
+        {
+            ulong accountNo;
+            ushort roomCnt;
+            ushort roomNo;
+            byte status;
+
+            recvPacket.Read(out accountNo);
+            recvPacket.Read(out status);
+            if (status > 0)
+            {
+                Form1.Instance.ClearRoomlistView();
+                recvPacket.Read(out roomCnt);
+                for (int i = 0; i < roomCnt; ++i)
+                {
+                    recvPacket.Read(out roomNo);
+                    Form1.Instance.AddRoomlistView(roomNo.ToString());
+                }
+            }
+        }
 
         public void RecvEnterRoom(ref CBuffer recvPacket)   // 302
         {

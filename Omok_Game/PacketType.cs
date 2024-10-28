@@ -11,6 +11,9 @@ namespace Omok_Game
         LoginRequest = 1,
         LoginResponse = 2,
 
+        RoomListRequest = 101,
+        RoomListResponse = 102,
+
         CreateRoomRequest = 201,
         CreateRoomResponse = 202,
 
