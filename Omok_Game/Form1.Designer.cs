@@ -365,6 +365,7 @@
             leaveRoombutton2.TabIndex = 11;
             leaveRoombutton2.Text = "방 나가기";
             leaveRoombutton2.UseVisualStyleBackColor = true;
+            leaveRoombutton2.Click += leaveRoombutton2_Click;
             // 
             // enterRoombutton2
             // 
