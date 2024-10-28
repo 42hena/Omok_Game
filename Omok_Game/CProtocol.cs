@@ -48,6 +48,9 @@ namespace Omok_Game
             {
                 CClient.Instance.Login(accountNo, nickname);
                 Console.WriteLine("Login !!!!!");
+
+                // UI - Login button disable
+                Form1.Instance.LoginDisable();
             }
             else
             {

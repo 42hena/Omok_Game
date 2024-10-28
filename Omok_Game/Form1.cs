@@ -487,6 +487,21 @@ namespace Omok_Game
 
         // =================================================
 
+        public void LoginDisable()
+        {
+            if (loginbutton.InvokeRequired)
+            {
+                loginbutton.Invoke(new MethodInvoker(delegate
+                {
+                    LoginDisable();
+                }));
+            }
+            else
+            {
+                loginbutton.Enabled = false;
+            }
+        }
+
         public void AddRoomUserList(string nickname)
         {
             var msg = $"{nickname}";
