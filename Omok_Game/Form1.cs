@@ -11,15 +11,12 @@ using Microsoft.VisualBasic.Devices;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using System.Diagnostics;
+
+//using PacketType;
 
 namespace Omok_Game
 {
-    enum Protocol
-    {
-        LoginRequest = 1,
-        LoginResponse = 2,
-    }
-
     public partial class Form1 : Form
     {
         public static Form1 Instance { get; private set; }
@@ -150,6 +147,74 @@ namespace Omok_Game
             omok = new COmok(g, boardSize, playType, firstPlayers);
         }
 
+        void OnMessage(CProtocol proto, en_PacketType pacektType, CBuffer newPacket)
+        {
+            switch (pacektType)
+            {
+                case en_PacketType.LoginResponse:               // 2
+                    proto.RecvLogin(ref newPacket);
+                    break;
+                case en_PacketType.CreateRoomResponse:          // 202
+                    proto.RecvCreateRoom(ref newPacket);
+                    break;
+                case en_PacketType.EnterRoomResponse:           // 302
+                    proto.RecvEnterRoom(ref newPacket);
+                    break;
+                case en_PacketType.EnterRoomBroadCastAlarm:     // 303
+                    proto.RecvEnterRoomAlarm(ref newPacket);
+                    break;
+                case en_PacketType.EnterRoomGetRoomUserList:    // 304
+                    proto.RecvUserList(ref newPacket);
+                    break;
+                case en_PacketType.EnterRoomGetRoomPlayerList:  // 305
+                    proto.RecvPlayerList(ref newPacket);
+                    break;
+                case en_PacketType.LeaveRoomResponse:           // 402
+                    proto.RecvLeaveRoom(ref newPacket);
+                    break;
+                case en_PacketType.LeaveRoomBroadCastAlarm:     // 403
+                    proto.RecvLeaveRoomAlarm(ref newPacket);
+                    break;
+                case en_PacketType.ChatResponse:                // 502
+                    proto.RecvChatting(ref newPacket);
+                    break;
+
+                case en_PacketType.PlayerResponse:              // 1003
+                    proto.RecvChangePlayerPosition(ref newPacket);
+                    break;
+                case en_PacketType.SpectatorResponse:           // 1004
+                    proto.RecvChangeSpecPosition(ref newPacket);
+                    break;
+
+                case en_PacketType.ReadyResponse:               // 1102
+                    proto.RecvReady(ref newPacket);
+                    break;
+
+                case en_PacketType.CancelResponse:              // 1104
+                    proto.RecvCancelReady(ref newPacket);
+                    break;
+
+                case en_PacketType.GameStart:                   // 1105
+                    Console.WriteLine("Game Start");
+                    proto.RecvGameStart(ref newPacket);
+                    break;
+                case en_PacketType.PlaceStoneResponse:          // 1109
+                    proto.RecvPutStone(ref newPacket);
+                    Console.WriteLine("en_PutStoneResponse X");
+                    break;
+
+                case en_PacketType.Record:  // 더미만 사용.
+                    break;
+                case en_PacketType.GameOver:
+                    proto.RecvGameOver(ref newPacket);
+                    Console.WriteLine("en_GameOverResponse X");
+                    break;
+                case en_PacketType.Echo:
+                    proto.RecvEcho(ref newPacket);
+                    break;
+            }
+        }
+
         void NetworkReadProcess()
         {
             const Int16 PacketHeaderSize = CProtocol.PACKET_HEADER_SIZE;
@@ -161,9 +226,7 @@ namespace Omok_Game
             while (true)
             {
                 if (clientTcp.IsConnected() == false)
-                {
                     continue;
-                }
 
                 List<Socket> readSockets = new List<Socket> { clientTcp.serverSock };
                 List<Socket> writeSockets = null;
@@ -171,8 +234,6 @@ namespace Omok_Game
                 Socket.Select(readSockets, writeSockets, errorSockets, -1);
                 if (readSockets.Count > 0)
                 {
-                    //try
-                    //{
                     int headerSize = 2;
                     byte[] buffer = new byte[1000];
                     byte[] tmp = new byte[1000];
@@ -182,30 +243,29 @@ namespace Omok_Game
                         int enqueueRecv = clientTcp._recvBuffer.Enqueue(buffer, bytesReceived);
                         if (enqueueRecv != bytesReceived)
                         {
-                            labelStatus.Text = string.Format("{0}. ????????", DateTime.Now);
-                            return;
+                            Debugger.Break();
                         }
                         else
                         {
                             int rrr = clientTcp._recvBuffer.Peek(tmp, bytesReceived);
                             if (enqueueRecv != rrr)
                             {
-                                int a = 0;
+                                Debugger.Break();
                             }
                             for (int i = 0; i < rrr; i++)
                             {
                                 if (buffer[i] != tmp[i])
                                 {
-                                    int a = 0;
+                                    Debugger.Break();
                                 }
                             }
                             while (bytesReceived > 0)
                             {
-                                if (bytesReceived < headerSize)
+                                if (bytesReceived < PacketHeaderSize)
                                     break;
                                 CBuffer newPacket = new CBuffer();
-                                int peekSize = clientTcp._recvBuffer.Peek(newPacket.ToArray(), headerSize);
-                                if (peekSize != headerSize)
+                                int peekSize = clientTcp._recvBuffer.Peek(newPacket.ToArray(), PacketHeaderSize);
+                                if (peekSize != PacketHeaderSize)
                                     break;
                                 int uS = clientTcp._recvBuffer.GetUseSize();
                                 int fS = clientTcp._recvBuffer.GetFreeSize();
@@ -214,13 +274,13 @@ namespace Omok_Game
                                 var ss = $"bytesReceived {bytesReceived}, {uS}, {fS}, {eQ}, {dQ}";
                                 if (fS < eQ)
                                 {
-                                    int a = 0;
+                                    Debugger.Break();
                                 }
-                                Console.WriteLine(ss);
+                                //Console.WriteLine(ss);
                                 short packetSize = newPacket.GetPacketLength();
                                 if (packetSize > 20000)
                                 {
-                                    int a = 0;
+                                    Debugger.Break();
                                 }
                                 var sss = $"packet {packetSize}";
                                 Console.WriteLine(sss);
@@ -233,99 +293,19 @@ namespace Omok_Game
                                 clientTcp._recvBuffer.Dequeue(newPacket.ToArray(), packetSize + headerSize);
 
                                 // Parsing(newPacket);
-                                ushort type;
-                                newPacket.Read(out type);
-                                switch (type)
-                                {
-                                    case 0:
-                                        break;
-                                    case 2: // Login
-                                        proto.RecvLogin(ref newPacket);
-                                        break;
-                                    case 202:
-                                        proto.RecvCreateRoom(ref newPacket);
-                                        break;
-                                    case 302:   // Enter Echo
-                                        {
-                                            Console.WriteLine("In RecvEnterRoom");
-                                            proto.RecvEnterRoom(ref newPacket);
-                                            break;
-                                        }
-                                    case 303:   // Enter BroadCast
-                                        {
-                                            Console.WriteLine("In Alarm");
-                                            proto.RecvEnterRoomAlarm(ref newPacket);
-                                            break;
-                                        }
-                                    case 304:   // Enter 시 userList 받기.
-                                        {
-                                            Console.WriteLine("UserList");
-                                            proto.RecvUserList(ref newPacket);
-                                            break;
-                                        }
-                                    case 305:   // Enter 시 userList 받기.
-                                        {
-                                            Console.WriteLine("PlayerList");
-                                            proto.RecvPlayerList(ref newPacket);
-                                            break;
-                                        }
-                                    case 402:
-                                        proto.RecvLeaveRoom(ref newPacket);
-                                        break;
-                                    case 403:
-                                        proto.RecvLeaveRoomAlarm(ref newPacket);
-                                        break;
-                                    case 502:
-                                        proto.RecvChatting(ref newPacket);
-                                        break;
+                                //ushort type;
+                                //newPacket.Read(out type);
 
-                                    case 1003:
-                                        proto.RecvChangePlayerPosition(ref newPacket);
-                                        break;
-                                    case 1004:
-                                        proto.RecvChangeSpecPosition(ref newPacket);
-                                        break;
+                                en_PacketType pacektType;
+                                newPacket.Read(out pacektType);
 
-                                    case 1102:
-                                        proto.RecvReady(ref newPacket);
-                                        break;
-
-                                    case 1104:
-                                        proto.RecvCancelReady(ref newPacket);
-                                        break;
-
-                                    case 1105:
-                                        Console.WriteLine("Game Start");
-                                        proto.RecvGameStart(ref newPacket);
-                                        break;
-
-                                    case 1106:
-                                        Console.WriteLine("en_PlayerResponse X");
-                                        break;
-                                    case 1107:
-                                        Console.WriteLine("en_RecordResponse X");
-                                        break;
-
-                                    case 1109:
-                                        proto.RecvPutStone(ref newPacket);
-                                        Console.WriteLine("en_PutStoneResponse X");
-                                        break;
-
-                                    case 1111:
-                                        proto.RecvGameOver(ref newPacket);
-                                        Console.WriteLine("en_GameOverResponse X");
-                                        break;
-
-                                    case 60000:
-                                        proto.RecvEcho(ref newPacket);
-                                        break;
-                                }
+                                OnMessage(proto, pacektType, newPacket);
 
                                 bytesReceived -= (packetSize + headerSize);
                             }
                             if (bytesReceived < 0)
                             {
-                                int a = 0;
+                                Debugger.Break();
                             }
                         }
                     }
@@ -333,17 +313,6 @@ namespace Omok_Game
                     {
                         break;
                     }
-                    //}
-                    //catch (SocketException ex)
-                    //{
-                    //    Console.WriteLine($"SocketException: {ex.Message} (ErrorCode: {ex.SocketErrorCode})");
-                    //    clientTcp.Close();
-                    //}
-                    //catch (Exception ex)
-                    //{
-                    //    // 다른 예외 처리
-                    //    Console.WriteLine($"Unexpected exception: {ex.Message}");
-                    //}
                 }
             }
 
@@ -426,61 +395,6 @@ namespace Omok_Game
             omok.DrawStoneAll(e.Graphics);
         }
 
-        private void buttonStart_Click(object sender, EventArgs e)
-        {
-            bool restartFlag = false;
-
-            //if (omok.GetMainList().Count > 0)
-            //{
-            //    DialogResult res = MessageBox.Show("진행중 다시 시작?", "확인", MessageBoxButtons.OKCancel,
-            //        MessageBoxIcon.Information);
-            //    if (res == DialogResult.OK)
-            //    {
-            //        restartFlag = true;
-            //    }
-            //    if (res == DialogResult.Cancel)
-            //        restartFlag = false;
-            //}
-            //else
-            //{
-            //    restartFlag = true;
-            //}
-
-            //if (restartFlag)
-            //{
-            //    omok = new COmok(g, boardSize, playType, firstPlayers);
-            //    Refresh();
-            //}
-        }
-
-        private void buttonUndo_Click(object sender, EventArgs e)
-        {
-            //if (omok.isGameOver())
-            //    return;
-
-            //omok.UnDo();
-
-            ////if (omok.GetMainList().Count > 0)
-            ////{
-            ////    // DisplayInfo();
-            ////}
-            ////else
-            ////{
-
-            ////}
-
-            //Refresh();
-        }
-        private void buttonEnd_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
-
-
-
-
-
-
         private void connectButton_Click(object sender, EventArgs e)
         {
             string address = serverIpBox.Text;
@@ -516,6 +430,7 @@ namespace Omok_Game
 
         private void loginbutton_Click(object sender, EventArgs e)
         {
+            en_PacketType packetType = en_PacketType.LoginRequest;
             ushort type = 1;
             byte nickLen;
             string nickName = nicknameBox.Text;
@@ -526,7 +441,8 @@ namespace Omok_Game
             packet.Clear();
 
             // packet 합치기.
-            packet.Write(type);
+            //packet.Write(type);
+            packet.Write(packetType);
             packet.Write((long)accountNo);
             packet.Write(nickLen);
             //byte[] nickArray = Encoding.UTF8.GetBytes(nickName);
@@ -962,7 +878,7 @@ namespace Omok_Game
                 packet.Write(from);
                 packet.Write(to);
                 packet.Write(nickLen);
-                packet.Write(nickArray, nickLen*2);
+                packet.Write(nickArray, nickLen * 2);
 
                 packet.SetHeader();
 
@@ -1008,7 +924,7 @@ namespace Omok_Game
                 packet.Write(from);
                 packet.Write(to);
                 packet.Write(nickLen);
-                packet.Write(nickArray, nickLen*2);
+                packet.Write(nickArray, nickLen * 2);
 
                 packet.SetHeader();
 
@@ -1146,6 +1062,25 @@ namespace Omok_Game
             {
                 Console.Write("cancelbutton_Click Fail");
             }
+        }
+
+        private void leaveRoombutton2_Click(object sender, EventArgs e)
+        {
+            en_PacketType packetType = en_PacketType.LeaveRoomRequest;
+            ulong accountNo = CClient.Instance.GetAccountNo();
+            ushort roomNo = CClient.Instance.GetCurrentRoom();
+
+            CBuffer packet = new CBuffer();
+
+            packet.Write(packetType);
+
+            packet.Write((long)accountNo);
+            packet.Write(roomNo);
+
+            packet.SetHeader();
+
+            int useSize = packet.GetUseSize();
+            clientTcp._sendBuffer.Enqueue(packet.ToArray(), headerLen + useSize);
         }
     }
 }
