@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -86,6 +87,18 @@ namespace Omok_Game
         }
 
         // 2바이트(short)를 사용하는 Write 메서드
+
+        public bool Write(en_PacketType type)
+        {
+            if (_writePos + sizeof(ushort) >= _bufferSize)
+            {
+                return false;
+            }
+
+            byte[] temp = BitConverter.GetBytes((ushort)type);
+            return Write(temp, temp.Length);
+        }
+
         public bool Write(ushort data)
         {
             if (_writePos + sizeof(ushort) >= _bufferSize)
@@ -170,6 +183,22 @@ namespace Omok_Game
             _readPos += sizeof(short);
             return true;
         }
+
+        public bool Read(out en_PacketType data)
+        {
+            if (_readPos + sizeof(ushort) >= _bufferSize)
+            {
+                data = 0;
+                return false;
+            }
+
+            //data = BitConverter.ToUInt16(_buffer, _readPos);
+            ushort value = BitConverter.ToUInt16(_buffer, _readPos);
+            data = (en_PacketType)value; // enum으로 캐스팅
+            _readPos += sizeof(ushort);
+            return true;
+        }
+
         public bool Read(out ushort data)
         {
             if (_readPos + sizeof(ushort) >= _bufferSize)
