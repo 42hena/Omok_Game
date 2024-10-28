@@ -139,6 +139,10 @@ namespace Omok_Game
                 Console.WriteLine("RecvEnterRoom");
                 CClient.Instance.CreateRoom(roomNo);
                 Form1.Instance.AddRoomUserList(CClient.Instance.GetMyNickName());
+
+                // UI - EnterButton Disable
+                Form1.Instance.EnterRoomDisable1();
+                Form1.Instance.EnterRoomDisable2();
                 //Form1.Instance.EnterUserAlaram(CClient.Instance.GetMyNickName());
             }
         }
@@ -296,6 +300,10 @@ namespace Omok_Game
 
                 Form1.Instance.ClearUserList();
                 Form1.Instance.ClearChatList();
+
+                // UI - EnterButton Enable
+                Form1.Instance.EnterRoomEnable1();
+                Form1.Instance.EnterRoomEnable2();
             }
             else
             {
