@@ -61,18 +61,6 @@ namespace Omok_Game
         {
             lock (_lock)
             {
-                //if (_writePos + writeSize > _bufferSize)
-                //    _writePos = (_writePos + writeSize) % _bufferSize;
-                //else
-                //    _writePos += writeSize;
-                //return writeSize;
-                //int freeSize = GetFreeSize();
-                //writeSize = int.Min(writeSize, freeSize);   // 작은 놈 선택.
-                //if (_writePos + writeSize >= _bufferSize) // > -> >= 변경.
-                //    _writePos = (_writePos + writeSize) % _bufferSize;
-                //else
-                //    _writePos += writeSize;
-                //return writeSize;
                 int freeSize = GetFreeSize(); 
                 if (writeSize <= freeSize)
                 {
@@ -94,20 +82,6 @@ namespace Omok_Game
         {
             lock (_lock)
             {
-                //if (_readPos + readSize > _bufferSize)
-                //    _readPos = (_readPos + readSize) % _bufferSize;
-                //else
-                //    _readPos += readSize;
-                //return readSize;
-                //int useSize = GetUseSize();
-                //readSize = int.Min(readSize, useSize);
-
-                //if (_readPos + readSize >= _bufferSize) // > -> >=
-                //    _readPos = (_readPos + readSize) % _bufferSize;
-                //else
-                //    _readPos += readSize;
-                //return readSize;
-
                 int useSize = GetUseSize();
                 if (readSize <=useSize)
                 {
@@ -145,8 +119,6 @@ namespace Omok_Game
                 if (((_writePos + 1) % _bufferSize) == _readPos)
                     return 0;
 
-                // maxSize
-                //if (_writePos >= _readPos)
                 int freeSize = GetFreeSize();
                 if (freeSize >= writeSize)
                 {
@@ -161,65 +133,11 @@ namespace Omok_Game
                         Buffer.BlockCopy(src, eqSize, _buffer, 0, writeSize - eqSize);
                     }
                     return MoveWritePos(writeSize);
-                    //if (_readPos <= _writePos)
-                    //{
-                    //    remainWriteSize = _readPos + _bufferSize - _writePos - 1;
-                    //    {
-                    //        int a = 0;
-                    //    }
-                    //    remainWriteSize = int.Min(remainWriteSize, writeSize);
-                        
-                    //    if (_writePos + remainWriteSize >= _bufferSize)
-                    //    {
-                            
-                    //        MoveWritePos(remainWriteSize);
-                    //    }
-                    //    else
-                    //    {
-                    //        Buffer.BlockCopy(src, 0, _buffer, _writePos, remainWriteSize);
-                    //        MoveWritePos(remainWriteSize);
-                    //    }
-                    //    return remainWriteSize;
-
-                        //if (_writePos + remainWriteSize >= _bufferSize)
-                        //{
-                        //    //writeSize - (_bufferSize - _writePos);
-                        //    Buffer.BlockCopy(src, 0, _buffer, _writePos, (_bufferSize - _writePos));
-                        //    Buffer.BlockCopy(src, 0, _buffer, 0, remainWriteSize - (_bufferSize - _writePos));
-
-                        //    _writePos = (_writePos + remainWriteSize) % _bufferSize;
-                        //    //MoveWritePos(remainWriteSize);
-                        //}
-                        //else
-                        //{
-                        //    Buffer.BlockCopy(src, 0, _buffer, _writePos, remainWriteSize);
-                        //    _writePos += remainWriteSize;
-                        //    //MoveWritePos(remainWriteSize);
-                        //}
-                    //}
-                    //else
-                    //{
-                    //    int directEnSize = DirectEnqueueSize();
-                    //    directEnSize = int.Min(directEnSize, writeSize);
-                    //    Buffer.BlockCopy(src, 0, _buffer, _writePos, directEnSize);
-                    //    MoveWritePos(directEnSize);
-                    //    return directEnSize;
-                    //    //remainWriteSize = _readPos - _writePos - 1;
-
-                    //    //remainWriteSize = int.Min(remainWriteSize, writeSize);
-
-                    //    //Buffer.BlockCopy(src, 0, _buffer, _writePos, remainWriteSize);
-                    //    //_writePos += remainWriteSize;
-                    //    //MoveWritePos(remainWriteSize);
-                    //}
                 }
                 else
                 {
                     return -1;
                 }
-
-
-                //return remainWriteSize;
             }
         }
 
@@ -250,34 +168,6 @@ namespace Omok_Game
                 {
                     return -1;
                 }
-                //int remainReadSize = 0;
-                //if (_writePos >= _readPos)
-                //{
-                //    //remainReadSize = int.Min(_writePos - _readPos, readSize);
-                //    int dqSize = DirectDequeueSize();
-                //    remainReadSize = int.Min(dqSize, readSize);
-                //    Buffer.BlockCopy(_buffer, _readPos, dst, 0, remainReadSize);
-                //}
-                //else
-                //{
-                //    int totalSize = GetUseSize();
-
-                //    if (totalSize != (_bufferSize - _readPos + _writePos))
-                //    {
-                //        int a = 0;
-                //    }
-                //    remainReadSize = int.Min(totalSize, readSize);
-                //    int dqSize = DirectDequeueSize();
-                //    int front = int.Min(remainReadSize, dqSize);
-                //    Buffer.BlockCopy(_buffer, _readPos, dst, 0, front);
-
-                //    Buffer.BlockCopy(_buffer, 0, dst, remainReadSize, remainReadSize - front);
-
-                //    //Buffer.BlockCopy(_buffer, _readPos, dst, 0, (_bufferSize - _readPos));
-                //    //Buffer.BlockCopy(_buffer, _readPos, dst, (_bufferSize - _readPos), remainReadSize - (_bufferSize - _readPos));
-                //}
-
-                //return remainReadSize;
             }
         }
         public int Dequeue(byte[] dst, int readSize)
