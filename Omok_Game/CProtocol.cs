@@ -10,11 +10,8 @@ namespace Omok_Game
 {
     internal class CProtocol
     {
-        public const Int16 PACKET_HEADER_SIZE = 5;
-        public const int MAX_USER_ID_BYTE_LENGTH = 16;
-        public const int MAX_USER_PW_BYTE_LENGTH = 16;
+        public const Int16 PACKET_HEADER_SIZE = 2;
 
-        long globalData;
         long prevData = 0;
 
         
