@@ -144,6 +144,10 @@ namespace Omok_Game
                 Form1.Instance.EnterRoomDisable1();
                 Form1.Instance.EnterRoomDisable2();
                 //Form1.Instance.EnterUserAlaram(CClient.Instance.GetMyNickName());
+
+                // UI - LeaveButton Enable
+                Form1.Instance.LeaveRoomEnable1();
+                Form1.Instance.LeaveRoomEnable2();
             }
         }
 
@@ -304,6 +308,10 @@ namespace Omok_Game
                 // UI - EnterButton Enable
                 Form1.Instance.EnterRoomEnable1();
                 Form1.Instance.EnterRoomEnable2();
+                
+                // UI - LeaveButton Disable
+                Form1.Instance.LeaveRoomDisable1();
+                Form1.Instance.LeaveRoomDisable2();
             }
             else
             {

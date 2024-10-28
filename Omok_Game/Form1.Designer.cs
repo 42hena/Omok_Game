@@ -315,6 +315,7 @@
             // 
             // leaveRoombutton
             // 
+            leaveRoombutton.Enabled = false;
             leaveRoombutton.Location = new Point(217, 81);
             leaveRoombutton.Name = "leaveRoombutton";
             leaveRoombutton.Size = new Size(75, 23);
@@ -359,6 +360,7 @@
             // 
             // leaveRoombutton2
             // 
+            leaveRoombutton2.Enabled = false;
             leaveRoombutton2.Location = new Point(259, 19);
             leaveRoombutton2.Name = "leaveRoombutton2";
             leaveRoombutton2.Size = new Size(75, 23);

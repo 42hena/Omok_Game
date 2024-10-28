@@ -560,6 +560,66 @@ namespace Omok_Game
             }
         }
 
+        public void LeaveRoomEnable1()
+        {
+            if (leaveRoombutton.InvokeRequired)
+            {
+                leaveRoombutton.Invoke(new MethodInvoker(delegate
+                {
+                    LeaveRoomEnable1();
+                }));
+            }
+            else
+            {
+                leaveRoombutton.Enabled = true;
+            }
+        }
+
+        public void LeaveRoomEnable2()
+        {
+            if (leaveRoombutton2.InvokeRequired)
+            {
+                leaveRoombutton2.Invoke(new MethodInvoker(delegate
+                {
+                    LeaveRoomEnable2();
+                }));
+            }
+            else
+            {
+                leaveRoombutton2.Enabled = true;
+            }
+        }
+
+        public void LeaveRoomDisable1()
+        {
+            if (leaveRoombutton.InvokeRequired)
+            {
+                leaveRoombutton.Invoke(new MethodInvoker(delegate
+                {
+                    LeaveRoomDisable1();
+                }));
+            }
+            else
+            {
+                leaveRoombutton.Enabled = false;
+            }
+        }
+
+        public void LeaveRoomDisable2()
+        {
+            if (leaveRoombutton2.InvokeRequired)
+            {
+                leaveRoombutton2.Invoke(new MethodInvoker(delegate
+                {
+                    LeaveRoomDisable2();
+                }));
+            }
+            else
+            {
+                leaveRoombutton2.Enabled = false;
+            }
+        }
+
         public void AddRoomUserList(string nickname)
         {
             var msg = $"{nickname}";
